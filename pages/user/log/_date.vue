@@ -680,6 +680,7 @@ import deepmerge from 'deepmerge'
 moment.tz.setDefault("America/Los_Angeles")
 import _ from 'underscore'
 
+const overwriteMerge = (destinationArray, sourceArray, options) => sourceArray
 let { timeStringToDecimal, formatDateUrl, getDateFromUrl, getPace } = require('~/utils/date.js')
 
 const emptyEntry = {
@@ -780,8 +781,8 @@ export default {
       if (!this.didWeights)
         this.$set(this.entryData, 'weights', null)
       this.$axios.$post('log/' + formatDateUrl(moment(this.currentDay)), this.entryData).then((res) => {
-        res.entry = res || {}
-        this.entryData = deepmerge(this.emptyEntry, res)
+        res = res || {}
+        this.entryData = deepmerge(this.emptyEntry, res, { arrayMerge: overwriteMerge })
         this.originalData = JSON.parse(JSON.stringify(this.entryData))
         this.load()
       }).catch((e) => {
